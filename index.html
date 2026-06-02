@@ -1061,9 +1061,9 @@ body::before{
     <hr class="divider">
 
     <div class="cta-block">
-      <div class="cta-title serif">下載最簡版精華報告</div>
-      <div class="cta-desc">這次改成最穩定的列印版報告：四頁 A4、少量文字、清楚分區。按下後會開啟新視窗，選擇「另存為 PDF」即可。</div>
-      <button class="btn-cta" onclick="savePDF()"><span>📄</span> 下載最簡版 PDF</button>
+      <div class="cta-title serif">下載手機安全版精簡報告</div>
+      <div class="cta-desc">這版改成手機安全下載：不開新視窗、不走列印流程，直接在頁面內產生 4 頁精簡 PDF。</div>
+      <button class="btn-cta" onclick="savePDF()"><span>📄</span> 下載手機安全版 PDF</button>
     </div>
 
     <div class="share-link-section">
@@ -1715,18 +1715,138 @@ async function generateCard(persona) {
 }
 
 // ── 直接用設計師提供的美圖作為分享卡片 ──
+let currentShareCardDataUrl = '';
+
+function dataURLToBlob(dataUrl) {
+  const parts = dataUrl.split(',');
+  const mime = (parts[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+  const binary = atob(parts[1]);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
 function showCard(dataUrl) {
+  currentShareCardDataUrl = dataUrl;
+
   const imgEl  = document.getElementById('share-card-img');
   const loading = document.getElementById('share-loading');
   const btnDl  = document.getElementById('btn-download');
+  const btnShare = document.getElementById('btn-share-card');
+  const btnOpen = document.getElementById('btn-open-image');
   const hint   = document.getElementById('share-hint');
 
   imgEl.src = dataUrl;
   imgEl.style.display = 'block';
   loading.style.display = 'none';
-  btnDl.href = dataUrl;
-  btnDl.style.display = 'flex';
+
+  if (btnShare) btnShare.style.display = 'flex';
+  if (btnOpen) btnOpen.style.display = 'flex';
+
+  // Keep old download as a hidden fallback link for browsers that still support it.
+  if (btnDl) {
+    btnDl.href = dataUrl;
+    btnDl.style.display = 'none';
+  }
+
   hint.style.display = 'block';
+}
+
+async function shareOrSaveCard() {
+  if (!currentShareCardDataUrl) {
+    toast('結果卡還在產生中，請稍候');
+    return;
+  }
+
+  try {
+    const blob = dataURLToBlob(currentShareCardDataUrl);
+    const file = new File([blob], 'RENATA_Holymake_社群人格結果卡.jpg', { type: 'image/jpeg' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      await navigator.share({
+        files: [file],
+        title: '我的美髮師社群人格結果卡',
+        text: '我測出了我的美髮師社群人格！'
+      });
+      return;
+    }
+  } catch (e) {
+    console.warn('Native share failed, fallback to image tab:', e);
+  }
+
+  openResultCardImage();
+}
+
+function openResultCardImage() {
+  if (!currentShareCardDataUrl) {
+    toast('結果卡還在產生中，請稍候');
+    return;
+  }
+
+  const imageWindow = window.open('', '_blank');
+  if (!imageWindow) {
+    const dl = document.getElementById('btn-download');
+    if (dl) {
+      dl.style.display = 'block';
+      dl.classList.add('show');
+      toast('請點下方備用下載連結，或允許彈出視窗');
+    } else {
+      toast('請允許彈出視窗後再試一次');
+    }
+    return;
+  }
+
+  imageWindow.document.open();
+  imageWindow.document.write(`<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RENATA × Holymake 結果卡</title>
+<style>
+  body {
+    margin: 0;
+    background: #111;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    color: #fff;
+  }
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+    -webkit-touch-callout: default;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  p {
+    margin: 14px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,.82);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img src="${currentShareCardDataUrl}" alt="RENATA × Holymake 結果卡">
+    <p>長按圖片儲存。若目前在 LINE / IG 內建瀏覽器，建議點右上角「⋯」用 Safari / Chrome 開啟。</p>
+  </div>
+</body>
+</html>`);
+  imageWindow.document.close();
 }
 
 // ─── UTILS ──────────────────────────────────────────────────────
@@ -1771,356 +1891,324 @@ function copyLink(){
 }
 
 function savePDF(){
-  const pk = classify();
-  const p = P[pk];
-  openSimplePrintReport(pk, p);
+  toast('正在產生手機安全版 PDF，請稍候⋯⋯');
+  setTimeout(async () => {
+    try {
+      const pk = classify();
+      const p = P[pk];
+      await generateMobileSafePDF(pk, p);
+    } catch(e) {
+      console.error(e);
+      toast('PDF 產生失敗，請重新整理後再試一次');
+    }
+  }, 120);
 }
 
-function escapeHTML(str) {
-  return String(str || '').replace(/[&<>"']/g, s => ({
-    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-  }[s]));
+function pdfWrap(ctx, text, maxW, maxLines) {
+  const src = String(text || '');
+  const lines = [];
+  let cur = '';
+  for (const ch of src) {
+    const test = cur + ch;
+    if (ctx.measureText(test).width <= maxW) {
+      cur = test;
+    } else {
+      if (cur) lines.push(cur);
+      cur = ch;
+    }
+  }
+  if (cur) lines.push(cur);
+  if (maxLines && lines.length > maxLines) {
+    const cut = lines.slice(0, maxLines);
+    let last = cut[cut.length - 1] || '';
+    while (ctx.measureText(last + '…').width > maxW && last.length > 0) last = last.slice(0, -1);
+    cut[cut.length - 1] = last + '…';
+    return cut;
+  }
+  return lines;
 }
 
-function simpleList(items, type) {
-  return (items || []).map((item, index) => {
-    if (type === 'audience') {
-      return `
-        <div class="simple-item">
-          <div class="num">${index + 1}</div>
-          <div>
-            <h3>${escapeHTML(item.icon || '')} ${escapeHTML(item.title || '')}</h3>
-            <p>${escapeHTML(item.desc || '')}</p>
-          </div>
-        </div>`;
-    }
-    if (type === 'tips') {
-      return `
-        <div class="simple-item">
-          <div class="num">${index + 1}</div>
-          <div>
-            <h3>${escapeHTML(item.t || '')}</h3>
-            <p>${escapeHTML(item.s || '')}</p>
-          </div>
-        </div>`;
-    }
-    if (type === 'products') {
-      return `
-        <div class="simple-item">
-          <div class="num">${index + 1}</div>
-          <div>
-            <h3>${escapeHTML(item.name || '')}</h3>
-            <p>${escapeHTML(item.why || '')}</p>
-          </div>
-        </div>`;
-    }
-    return '';
-  }).join('');
+function pdfRRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
 }
 
-function openSimplePrintReport(pk, p) {
+function pdfDrawText(ctx, text, x, y, maxW, font, color, lineH, maxLines) {
+  ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  const lines = pdfWrap(ctx, text, maxW, maxLines);
+  lines.forEach(line => {
+    ctx.fillText(line, x, y);
+    y += lineH;
+  });
+  return y;
+}
+
+function pdfCard(ctx, x, y, w, h, bg) {
+  ctx.fillStyle = bg || '#FFFFFF';
+  pdfRRect(ctx, x, y, w, h, 24);
+  ctx.fill();
+  ctx.strokeStyle = '#E8DDD0';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function pdfBadge(ctx, x, y, text, bg, fg) {
+  ctx.font = 'bold 24px "Noto Serif TC","Microsoft JhengHei","PingFang TC",sans-serif';
+  const width = Math.min(ctx.measureText(text).width + 34, 380);
+  ctx.fillStyle = bg;
+  pdfRRect(ctx, x, y, width, 42, 21);
+  ctx.fill();
+  ctx.fillStyle = fg;
+  ctx.fillText(text, x + 17, y + 29);
+  return width;
+}
+
+function pdfItem(ctx, x, y, w, title, desc, num, mainColor) {
+  pdfCard(ctx, x, y, w, 146, '#FFFFFF');
+  ctx.fillStyle = mainColor;
+  ctx.beginPath();
+  ctx.arc(x + 44, y + 52, 26, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 24px "DM Sans","Microsoft JhengHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(String(num), x + 44, y + 61);
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#2C1A0A';
+  ctx.font = 'bold 30px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText(title || '', x + 86, y + 48);
+
+  pdfDrawText(
+    ctx,
+    desc || '',
+    x + 86,
+    y + 88,
+    w - 116,
+    '25px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif',
+    '#6B4423',
+    34,
+    2
+  );
+}
+
+async function generateMobileSafePDF(pk, p) {
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch(e) {}
+  }
+
+  const jsPDFLib = window.jspdf && window.jspdf.jsPDF;
+  if (!jsPDFLib) {
+    toast('PDF 套件尚未載入，請稍後再試一次');
+    return;
+  }
+
+  const palette = {
+    visual: '#db6014',
+    warm: '#8A9E88',
+    edu: '#6F6FA8',
+    trend: '#db6014'
+  };
+  const mainColor = palette[pk] || '#db6014';
+
+  const W = 1240;
+  const H = 1754;
+  const pad = 92;
+
   const audience = (p.audience || []).slice(0, 3);
   const tips = (p.tips || []).slice(0, 3);
   const products = (p.products || []).slice(0, 3);
-  const tags = (p.animalHashtags || []).slice(0, 3).map(t => `<span>${escapeHTML(t)}</span>`).join('');
+  const tags = (p.animalHashtags || []).slice(0, 3);
 
-  const reportHTML = `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENATA × Holymake｜社群人格精簡報告</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: #f2eee7;
-    color: #2C1A0A;
-    font-family: "DM Sans", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
-  }
-  .toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: 14px 16px;
-    background: rgba(250,248,244,.96);
-    border-bottom: 1px solid #E8DDD0;
-    text-align: center;
-  }
-  .toolbar button {
-    width: min(420px, 100%);
-    border: none;
-    border-radius: 14px;
-    padding: 13px 18px;
-    background: #db6014;
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .hint {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #6B4423;
-  }
-  .page {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 18px auto;
-    padding: 18mm 18mm 16mm;
-    background: #FAF8F4;
-    box-shadow: 0 12px 32px rgba(44,26,10,.12);
-    page-break-after: always;
-  }
-  .brand {
-    color: #db6014;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    margin-bottom: 12px;
-  }
-  h1, h2, h3 {
-    font-family: "Noto Serif TC", "Noto Sans TC", "Microsoft JhengHei", serif;
-    margin: 0;
-  }
-  h1 {
-    font-size: 34px;
-    line-height: 1.25;
-    margin-bottom: 10px;
-  }
-  h2 {
-    font-size: 25px;
-    line-height: 1.35;
-    border-left: 6px solid #db6014;
-    padding-left: 12px;
-    margin-bottom: 18px;
-  }
-  h3 {
-    font-size: 18px;
-    line-height: 1.45;
-    margin-bottom: 5px;
-  }
-  p {
-    margin: 0;
-    color: #6B4423;
-    font-size: 14.5px;
-    line-height: 1.75;
-  }
-  .hero {
-    border: 1px solid #E8DDD0;
-    border-radius: 22px;
-    padding: 22px;
-    background: white;
-    margin-bottom: 22px;
-  }
-  .emoji {
-    font-size: 52px;
-    margin-bottom: 8px;
-  }
-  .subtitle {
-    font-size: 20px;
-    color: #6B4423;
-    margin-bottom: 12px;
-  }
-  .tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 14px 0;
-  }
-  .tags span {
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #FBF0E8;
-    color: #db6014;
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 18px;
-  }
-  .summary-card {
-    border: 1px solid #E8DDD0;
-    border-radius: 16px;
-    background: white;
-    padding: 15px;
-  }
-  .summary-label {
-    font-size: 12px;
-    color: #8A9E88;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .summary-value {
-    font-family: "Noto Serif TC", serif;
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.45;
-  }
-  .simple-item {
-    display: grid;
-    grid-template-columns: 38px 1fr;
-    gap: 12px;
-    padding: 16px 0;
-    border-bottom: 1px solid #E8DDD0;
-  }
-  .simple-item:last-child { border-bottom: none; }
-  .num {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
-    background: #db6014;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-  }
-  .section-box {
-    border: 1px solid #E8DDD0;
-    border-radius: 20px;
-    background: white;
-    padding: 20px;
-    margin-bottom: 18px;
-  }
-  .note {
-    border-radius: 18px;
-    background: #FBF0E8;
-    padding: 18px;
-    margin-top: 18px;
-  }
-  .footer {
-    margin-top: 20px;
-    padding-top: 14px;
-    border-top: 1px solid #E8DDD0;
-    font-size: 12px;
-    color: #8A9E88;
-    text-align: center;
-  }
-  @media print {
-    body { background: white; }
-    .toolbar { display: none; }
-    .page {
-      margin: 0;
-      box-shadow: none;
-      width: auto;
-      min-height: auto;
-      page-break-after: always;
-    }
-    @page {
-      size: A4;
-      margin: 0;
-    }
-  }
-</style>
-</head>
-<body>
-  <div class="toolbar">
-    <button onclick="window.print()">下載 / 另存為 PDF</button>
-    <div class="hint">請選擇「列印」→「另存為 PDF」。這是最穩定、不亂碼的版本。</div>
-  </div>
+  function makePage(pageNo, title, eyebrow) {
+    const cvs = document.createElement('canvas');
+    cvs.width = W;
+    cvs.height = H;
+    const ctx = cvs.getContext('2d');
 
-  <section class="page">
-    <div class="brand">RENATA × Holymake｜社群人格精簡報告</div>
-    <div class="hero">
-      <div class="emoji">${escapeHTML(p.animalEmoji || '')}</div>
-      <h1>${escapeHTML(p.animalName || '')}</h1>
-      <div class="subtitle">${escapeHTML(p.name || '')}｜稀有度 ${escapeHTML(p.rarity || '')}%</div>
-      <div class="tags">${tags}</div>
-      <p>${escapeHTML(p.desc || '')}</p>
-    </div>
+    ctx.fillStyle = '#FAF8F4';
+    ctx.fillRect(0, 0, W, H);
 
-    <div class="summary-grid">
-      <div class="summary-card">
-        <div class="summary-label">主要受眾</div>
-        <div class="summary-value">${escapeHTML((audience[0] && audience[0].title) || '依測驗結果判斷')}</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">優先內容</div>
-        <div class="summary-value">${escapeHTML((tips[0] && tips[0].t) || '先選一種內容開始拍')}</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">產品方向</div>
-        <div class="summary-value">${escapeHTML((products[0] && products[0].name) || '選最容易理解的髮品')}</div>
-      </div>
-    </div>
+    const grad = ctx.createLinearGradient(0, 0, W, 0);
+    grad.addColorStop(0, mainColor);
+    grad.addColorStop(1, '#ff863b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, 16);
 
-    <div class="note">
-      <h3>這份結果怎麼看？</h3>
-      <p>不要把它當成完整企劃書，而是當成一張方向地圖：先知道你吸引誰，再決定拍什麼、推薦什麼。</p>
-    </div>
+    ctx.strokeStyle = '#E8DDD0';
+    ctx.lineWidth = 2;
+    pdfRRect(ctx, 46, 46, W - 92, H - 92, 34);
+    ctx.stroke();
 
-    <div class="footer">Page 1 / 4</div>
-  </section>
+    ctx.fillStyle = mainColor;
+    ctx.font = 'bold 24px "DM Sans","Microsoft JhengHei",sans-serif';
+    ctx.fillText(eyebrow, pad, 98);
 
-  <section class="page">
-    <div class="brand">RENATA × Holymake｜你吸引的觀眾</div>
-    <h2>你最容易吸引的 3 種觀眾</h2>
-    <div class="section-box">
-      ${simpleList(audience, 'audience')}
-    </div>
-    <div class="note">
-      <h3>受眾洞察</h3>
-      <p>${escapeHTML(p.insight || '')}</p>
-    </div>
-    <div class="footer">Page 2 / 4</div>
-  </section>
+    ctx.fillStyle = '#2C1A0A';
+    ctx.font = 'bold 48px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+    ctx.fillText(title, pad, 156);
 
-  <section class="page">
-    <div class="brand">RENATA × Holymake｜推薦產品方向</div>
-    <h2>適合這類觀眾的產品方向</h2>
-    <div class="section-box">
-      ${simpleList(products, 'products')}
-    </div>
-    <div class="note">
-      <h3>使用方式</h3>
-      <p>這頁不是要你一次推全部品項，而是先抓出最容易被客人理解的方向，再和服務流程、內容主題搭配。</p>
-    </div>
-    <div class="footer">Page 3 / 4</div>
-  </section>
+    ctx.fillStyle = '#8A9E88';
+    ctx.font = '22px "DM Sans","Microsoft JhengHei",sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`PAGE ${pageNo} / 4`, W - pad, 98);
+    ctx.textAlign = 'left';
 
-  <section class="page">
-    <div class="brand">RENATA × Holymake｜內容策略建議</div>
-    <h2>先從這些內容類型開始拍</h2>
-    <div class="section-box">
-      ${simpleList(tips, 'tips')}
-    </div>
-    <div class="note">
-      <h3>最後記住</h3>
-      <p>不需要一次把所有策略都做完。先拍最容易被你受眾理解的一種內容，穩定出現，才會累積信任。</p>
-    </div>
-    <div class="footer">Page 4 / 4</div>
-  </section>
+    ctx.fillStyle = mainColor;
+    ctx.font = 'bold 30px "DM Sans","Microsoft JhengHei",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('RENATA × Holymake', W / 2, H - 78);
+    ctx.fillStyle = '#8A6B55';
+    ctx.font = '22px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+    ctx.fillText('美髮師社群人格｜精簡報告', W / 2, H - 44);
+    ctx.textAlign = 'left';
 
-</body>
-</html>`;
-
-  const w = window.open('', '_blank');
-  if (!w) {
-    toast('請允許跳出視窗，才能開啟 PDF 列印版');
-    return;
+    return { cvs, ctx };
   }
-  w.document.open();
-  w.document.write(reportHTML);
-  w.document.close();
-  setTimeout(() => {
-    try {
-      w.focus();
-      w.print();
-    } catch(e) {
-      console.warn(e);
-    }
-  }, 650);
-  toast('已開啟精簡報告，請選擇另存為 PDF');
-}
 
+  const pages = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+  // Page 1
+  let { cvs, ctx } = makePage(1, '人格結果總覽', 'RESULT OVERVIEW');
+  let y = 230;
+  pdfCard(ctx, pad, y, W - pad * 2, 398, '#FFFFFF');
+  ctx.font = '96px serif';
+  ctx.fillText(p.animalEmoji || '', pad + 40, y + 112);
+
+  ctx.fillStyle = mainColor;
+  ctx.font = 'bold 28px "DM Sans","Microsoft JhengHei",sans-serif';
+  ctx.fillText('你的社群人格', pad + 168, y + 72);
+
+  ctx.fillStyle = '#2C1A0A';
+  ctx.font = 'bold 72px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText(p.animalName || '', pad + 168, y + 148);
+
+  ctx.fillStyle = '#6B4423';
+  ctx.font = '34px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText(`${p.name || ''}｜稀有度 ${p.rarity || ''}%`, pad + 168, y + 206);
+
+  let tx = pad + 168;
+  tags.forEach(tag => {
+    tx += pdfBadge(ctx, tx, y + 238, tag, '#FBF0E8', mainColor) + 10;
+  });
+
+  pdfDrawText(
+    ctx,
+    p.desc || '',
+    pad + 40,
+    y + 332,
+    W - pad * 2 - 80,
+    '29px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif',
+    '#6B4423',
+    40,
+    2
+  );
+
+  y += 480;
+  ctx.fillStyle = '#2C1A0A';
+  ctx.font = 'bold 38px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText('這份結果先看 3 個重點', pad, y);
+  y += 64;
+
+  const colW = (W - pad * 2 - 34) / 3;
+  [
+    ['主要受眾', audience[0]?.title || '依測驗結果判斷'],
+    ['優先內容', tips[0]?.t || '先選一種內容開始拍'],
+    ['產品方向', products[0]?.name || '選最容易理解的髮品']
+  ].forEach((item, i) => {
+    const x = pad + i * (colW + 17);
+    pdfCard(ctx, x, y, colW, 168, '#FFFFFF');
+    ctx.fillStyle = '#8A9E88';
+    ctx.font = 'bold 23px "DM Sans","Microsoft JhengHei",sans-serif';
+    ctx.fillText(item[0], x + 24, y + 42);
+    pdfDrawText(
+      ctx,
+      item[1],
+      x + 24,
+      y + 92,
+      colW - 48,
+      'bold 31px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif',
+      mainColor,
+      38,
+      2
+    );
+  });
+  pages.push(cvs);
+
+  // Page 2
+  ({ cvs, ctx } = makePage(2, '你吸引的觀眾', 'AUDIENCE'));
+  y = 238;
+  pdfDrawText(ctx, '這一頁整理你最容易吸引的觀眾類型，以及他們為什麼會對你的內容有感。', pad, y, W - pad * 2, '31px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#6B4423', 44, 2);
+  y += 126;
+  audience.forEach((a, i) => {
+    pdfItem(ctx, pad, y, W - pad * 2, `${a.icon || ''} ${a.title || ''}`, a.desc || '', i + 1, mainColor);
+    y += 178;
+  });
+  y += 20;
+  pdfCard(ctx, pad, y, W - pad * 2, 246, '#FBF0E8');
+  ctx.fillStyle = mainColor;
+  ctx.font = 'bold 34px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText('受眾洞察', pad + 36, y + 62);
+  pdfDrawText(ctx, p.insight || '', pad + 36, y + 118, W - pad * 2 - 72, '28px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#4D3828', 40, 3);
+  pages.push(cvs);
+
+  // Page 3
+  ({ cvs, ctx } = makePage(3, '推薦產品方向', 'PRODUCT DIRECTION'));
+  y = 238;
+  pdfDrawText(ctx, '這一頁不是要你一次推全部品項，而是先找出最容易被這類觀眾理解的產品方向。', pad, y, W - pad * 2, '31px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#6B4423', 44, 2);
+  y += 126;
+  products.forEach((pr, i) => {
+    pdfItem(ctx, pad, y, W - pad * 2, pr.name || '', pr.why || '', i + 1, mainColor);
+    y += 178;
+  });
+  y += 20;
+  pdfCard(ctx, pad, y, W - pad * 2, 190, '#FBF0E8');
+  ctx.fillStyle = mainColor;
+  ctx.font = 'bold 32px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText('使用方式', pad + 36, y + 62);
+  pdfDrawText(ctx, '拿這頁和業務討論：這類客人最容易被哪種效果、情境或服務搭配打動？', pad + 36, y + 118, W - pad * 2 - 72, '28px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#4D3828', 40, 2);
+  pages.push(cvs);
+
+  // Page 4
+  ({ cvs, ctx } = makePage(4, '內容策略建議', 'CONTENT STRATEGY'));
+  y = 238;
+  pdfDrawText(ctx, '先從最符合你社群人格的影片形式開始，讓客人更快看懂你的價值。', pad, y, W - pad * 2, '31px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#6B4423', 44, 2);
+  y += 126;
+  tips.forEach((t, i) => {
+    pdfItem(ctx, pad, y, W - pad * 2, t.t || '', t.s || '', i + 1, mainColor);
+    y += 178;
+  });
+  y += 20;
+  pdfCard(ctx, pad, y, W - pad * 2, 190, '#FBF0E8');
+  ctx.fillStyle = mainColor;
+  ctx.font = 'bold 32px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif';
+  ctx.fillText('最後記住', pad + 36, y + 62);
+  pdfDrawText(ctx, '不用一次把所有策略都做完。先拍最容易被你受眾理解的一種內容，穩定出現，才會累積信任。', pad + 36, y + 118, W - pad * 2 - 72, '28px "Noto Serif TC","Microsoft JhengHei","PingFang TC",serif', '#4D3828', 40, 2);
+  pages.push(cvs);
+
+  const pdf = new jsPDFLib({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  pages.forEach((page, i) => {
+    if (i > 0) pdf.addPage();
+    pdf.addImage(page.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+  });
+
+  const safeName = (p.animalName || '社群人格').replace(/[\\/:*?"<>|]/g, '');
+  pdf.save(`RENATA_Holymake_${safeName}_手機安全版精簡報告.pdf`);
+  toast('手機安全版 PDF 已下載！📄');
+}document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.querySelector('.btn-primary');
   if (startBtn) {
     startBtn.addEventListener('click', (e) => {
