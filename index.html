@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#FAF8F4">
-<meta name="description" content="RENATA × Holymake 社群人格分析 Web App">
 <title>社群人格分析｜RENATA × Holymake</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,10 +40,16 @@ body {
 /* ── Brand bar ── */
 .brand-bar {
   display: flex; flex-direction: column; align-items: center;
-  padding: 20px 20px 12px; gap: 4px;
+  padding: 14px 20px 10px; gap: 4px;
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,248,244,0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(44,26,10,0.06);
 }
 .brand-row { display: flex; align-items: center; gap: 12px; }
-.brand-logo { height: 24px; object-fit: contain; mix-blend-mode: multiply; }
+.brand-logo { height: 28px; object-fit: contain; }
 .brand-x { color: var(--orange); font-size: 18px; font-weight: 300; }
 .brand-name { font-size: 1.4rem; line-height: 1; letter-spacing: -0.02em; padding-top: 2px; }
 .brand-name span:first-child { font-family: 'Noto Serif TC', serif; font-style: italic; font-weight: 700; color: var(--orange); }
@@ -77,6 +81,7 @@ body {
 .btn-primary:active { transform: scale(0.97); background: var(--brown-light); }
 .powered { font-size: 0.72rem; color: var(--green); margin-top: 20px; font-weight: 500; letter-spacing: 0.05em; }
 .powered strong { color: var(--brown-mid); }
+.disclaimer { font-size: 0.68rem; color: var(--green); margin-top: 8px; opacity: 0.8; letter-spacing: 0.03em; }
 
 /* ── Quiz ── */
 .quiz { padding-top: 32px; }
@@ -179,15 +184,20 @@ body {
   font-family: 'DM Sans', sans-serif;
 }
 .btn-download:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(219,96,20,0.2); }
-.share-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.btn-share-native {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid var(--orange);
-  background: var(--orange-pale); color: var(--orange); font-size: 0.95rem; font-weight: 700;
-  cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+.share-hint {
+  text-align: center; padding: 0 16px 16px; line-height: 1.8;
+  background: var(--orange-pale); border-top: 1px solid var(--border);
 }
-.btn-share-native:active { transform: scale(0.97); background: var(--orange); color: var(--white); }
-.share-hint { text-align: center; font-size: 0.7rem; color: var(--green); padding: 0 16px 12px; line-height: 1.6; }
+.share-hint-line {
+  display: block; font-size: 0.95rem; font-weight: 700; color: var(--brown-mid);
+  padding: 6px 0 2px;
+}
+.share-hint-line span {
+  color: var(--orange);
+}
+.share-hint-sub {
+  display: block; font-size: 0.75rem; color: var(--green); padding-bottom: 4px;
+}
 
 /* ── Section headings ── */
 .section-heading {
@@ -207,12 +217,13 @@ body {
 /* ── Cards ── */
 .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
 .card + .card { margin-top: 10px; }
-.audience-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.audience-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; gap: 10px; align-items: flex-start; }
-.audience-card:last-child:nth-child(odd) { grid-column: span 2; }
-.aud-icon { font-size: 1.1rem; padding-top: 2px; flex-shrink: 0; }
-.aud-title { font-size: 0.85rem; font-weight: 600; color: var(--brown-deep); margin-bottom: 4px; }
-.aud-desc { font-size: 0.78rem; color: var(--brown-mid); line-height: 1.55; }
+.audience-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+.audience-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; align-items: stretch; }
+.audience-card-img { width: 200px; min-width: 200px; object-fit: cover; display: block; }
+.audience-card-body { padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; }
+.aud-icon { font-size: 1rem; margin-right: 5px; }
+.aud-title { font-size: 0.88rem; font-weight: 700; color: var(--brown-deep); margin-bottom: 5px; }
+.aud-desc { font-size: 0.78rem; color: var(--brown-mid); line-height: 1.6; }
 
 .insight-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-top: 0; }
 .insight-title { font-size: 0.85rem; font-weight: 600; color: var(--brown-deep); margin-bottom: 6px; }
@@ -296,7 +307,7 @@ body {
 <!-- Brand Bar -->
 <div class="brand-bar">
   <div class="brand-row">
-    <img src="300PX.jpg" alt="RENATA" class="brand-logo" onerror="this.style.display='none'">
+    <img src="images/logo_renata.png" alt="RENATA" class="brand-logo">
     <span class="brand-x">×</span>
     <div class="brand-name">
       <span>Holy</span><span>make</span>
@@ -322,6 +333,7 @@ body {
     </div>
     <button class="btn-primary" onclick="startQuiz()">開始分析</button>
     <p class="powered">Powered by <strong>RENATA</strong> × Holymake</p>
+    <p class="disclaimer">本測驗結果純屬娛樂與參考，不代表專業心理診斷。</p>
   </div>
 
   <!-- ── QUIZ PAGE ── -->
@@ -359,16 +371,15 @@ body {
         </div>
         <img id="share-card-img" style="display:none" alt="社群人格分享卡">
       </div>
-      <div class="share-btn-wrap share-actions">
-        <button id="btn-share" class="btn-share-native" style="display:none" onclick="shareCardNative()">
-          <span>📲</span> 分享圖片到手機
-        </button>
-        <button id="btn-download" class="btn-download" style="display:none" onclick="downloadCardImage()">
-          <span>⬇️</span> 儲存圖片
-        </button>
+      <div class="share-btn-wrap">
+        <a id="btn-download" class="btn-download" style="display:none" download="renata-holymake.jpg">
+          <span>⬇️</span> 儲存圖片，分享到 IG
+        </a>
       </div>
       <div class="share-hint" id="share-hint" style="display:none">
-        iOS：可按「分享圖片到手機」或長按圖片加入照片　·　Android：可直接下載圖片
+        <span class="share-hint-line">📱 <span>iOS</span>：長按圖片 → 加入照片</span>
+        <span class="share-hint-line">🤖 <span>Android</span>：點上方按鈕下載</span>
+        <span class="share-hint-sub">儲存後直接開啟 IG → 限時動態貼上即可</span>
       </div>
     </div>
 
@@ -420,6 +431,7 @@ body {
 
     <div style="text-align:center;margin-top:24px;">
       <p class="powered">Powered by <strong>RENATA</strong> × Holymake</p>
+      <p class="disclaimer">本測驗結果純屬娛樂與參考，不代表專業心理診斷。</p>
     </div>
     <button class="btn-restart" onclick="startQuiz()">↺ 重新分析</button>
   </div>
@@ -473,13 +485,17 @@ const QS = [
 const P = {
   visual:{
     name:'造型視覺型設計師',animalEmoji:'🦚',animalName:'濾鏡孔雀',rarity:18,
+    cardImage:'images/card_visual.png',
     animalHashtags:['#孔雀級審美','#視覺細節控','#作品即名片'],
     cardColor:'#E07030',
     desc:'你的社群是一本視覺作品集，吸引的是被造型驚豔的潛在客戶。你的受眾高度視覺導向，做決定前需要「看到效果」。成交的關鍵是讓產品成為視覺內容的一部分。',
     audience:[
-      {icon:'👁️',title:'眼球至上主義者',desc:'他們在追蹤你之前，已經反覆看過你的作品。一張照片的衝擊感，比任何文字說明都有力。'},
-      {icon:'⚡',title:'衝動型預約新客',desc:'一旦看到喜歡的造型，行動速度很快。你只需要在對的時機出現，他們會自己找上門。'},
-      {icon:'🔄',title:'審美共鳴追隨者',desc:'他們同時追蹤多個設計師，但一旦找到真正懂自己審美的人，就會建立長期關係。'}
+      {icon:'👁️',image:'images/aud_visual_1.png',
+      title:'眼球至上主義者',desc:'他們在追蹤你之前，已經反覆看過你的作品。一張照片的衝擊感，比任何文字說明都有力。'},
+      {icon:'⚡',image:'images/aud_visual_2.png',
+      title:'衝動型預約新客',desc:'一旦看到喜歡的造型，行動速度很快。你只需要在對的時機出現，他們會自己找上門。'},
+      {icon:'🔄',image:'images/aud_visual_3.png',
+      title:'審美共鳴追隨者',desc:'他們同時追蹤多個設計師，但一旦找到真正懂自己審美的人，就會建立長期關係。'}
     ],
     insight:'你的受眾是「慾望型消費者」——他們不是因為需要才來，而是因為被你的作品點燃了想改變的欲望。衝動但有熱情，關鍵是在他們最有感覺的那一刻讓他們採取行動。',
     bars:[{l:'視覺吸引力',p:92,c:'#E07030'},{l:'潛客轉換率',p:78,c:'#A05828'},{l:'受眾黏著度',p:55,c:'#E07030'}],
@@ -495,13 +511,17 @@ const P = {
   },
   warm:{
     name:'關係溫度型設計師',animalEmoji:'🦦',animalName:'暖心水豚',rarity:26,
+    cardImage:'images/card_warm.png',
     animalHashtags:['#暖流守護者','#走心天花板','#靈魂傾聽大師'],
     cardColor:'#8A9E88',
     desc:'你靠真誠和溫度建立社群。吸引你的受眾不只是要做頭髮，他們要的是「那個懂我的設計師」。信任是你最大的資產，也是推薦產品最有力的後盾。',
     audience:[
-      {icon:'🤝',title:'尋求懂我的人',desc:'他們選設計師的標準不只作品，更在乎「跟這個人聊不聊得來」。你的個性本身就是最強的吸引力。'},
-      {icon:'🔁',title:'超高黏著回頭客',desc:'一旦建立信任，他們幾乎不會換人。定期回來不只是保養頭髮，也是來找你說說話。'},
-      {icon:'📣',title:'熱心口碑傳播者',desc:'他們推薦你不需要理由，因為介紹朋友給「懂我的設計師」，對他們來說是一種分享好東西的樂趣。'}
+      {icon:'🤝',image:'images/aud_warm_1.png',
+      title:'尋求懂我的人',desc:'他們選設計師的標準不只作品，更在乎「跟這個人聊不聊得來」。你的個性本身就是最強的吸引力。'},
+      {icon:'🔁',image:'images/aud_warm_2.png',
+      title:'超高黏著回頭客',desc:'一旦建立信任，他們幾乎不會換人。定期回來不只是保養頭髮，也是來找你說說話。'},
+      {icon:'📣',image:'images/aud_warm_3.png',
+      title:'熱心口碑傳播者',desc:'他們推薦你不需要理由，因為介紹朋友給「懂我的設計師」，對他們來說是一種分享好東西的樂趣。'}
     ],
     insight:'你的受眾是「關係型消費者」——他們把找設計師視為長期關係，換人的門檻很高。對你的推薦信任度極高，你說好的產品他們幾乎都願意試，是最穩定的推廣渠道。',
     bars:[{l:'客人忠誠度',p:90,c:'#8A9E88'},{l:'口碑擴散力',p:85,c:'#A05828'},{l:'潛客觸及率',p:48,c:'#8A9E88'}],
@@ -516,13 +536,17 @@ const P = {
   },
   edu:{
     name:'知識專業型設計師',animalEmoji:'🦉',animalName:'百科貓頭鷹',rarity:12,
+    cardImage:'images/card_edu.png',
     animalHashtags:['#成分考究家','#理性腦權威','#髮質診斷大師'],
     cardColor:'#D4C080',
     desc:'你用知識和專業建立信任。你的受眾是「認真研究過才來的」，對你有高度信任，也願意為真正好的產品買單。你的推薦對他們來說是「專家背書」。',
     audience:[
-      {icon:'🔍',title:'理性研究狂熱者',desc:'他們在追蹤你之前就做過功課了。看過你多篇貼文、比較過幾個設計師，才決定聯繫你——所以一旦來了，意願很強。'},
-      {icon:'🧠',title:'精準發問的鐵粉',desc:'他們不只問「怎麼讓頭髮變好」，會問「我這個髮質適合用什麼成分」。這是高信任度的表現，也是你最好的推薦時機。'},
-      {icon:'💎',title:'頂級療程消費者',desc:'他們不追求便宜，追求的是「值得」。你不需要打折，只需要說清楚為什麼值得這個價格。'}
+      {icon:'🔍',image:'images/aud_edu_1.png',
+      title:'理性研究狂熱者',desc:'他們在追蹤你之前就做過功課了。看過你多篇貼文、比較過幾個設計師，才決定聯繫你——所以一旦來了，意願很強。'},
+      {icon:'🧠',image:'images/aud_edu_2.png',
+      title:'精準發問的鐵粉',desc:'他們不只問「怎麼讓頭髮變好」，會問「我這個髮質適合用什麼成分」。這是高信任度的表現，也是你最好的推薦時機。'},
+      {icon:'💎',image:'images/aud_edu_3.png',
+      title:'頂級療程消費者',desc:'他們不追求便宜，追求的是「值得」。你不需要打折，只需要說清楚為什麼值得這個價格。'}
     ],
     insight:'你的受眾是「研究型消費者」——在追蹤你之前就做過功課了。他們問的問題更精準，也更願意花時間和金錢在真正有效的方案上。你不需要說服他們，只需要給他們一個好理由。',
     bars:[{l:'受眾信任度',p:92,c:'#D4C080'},{l:'高單價轉換',p:80,c:'#A05828'},{l:'觸及新受眾',p:52,c:'#8A9E88'}],
@@ -537,13 +561,17 @@ const P = {
   },
   trend:{
     name:'話題流行型設計師',animalEmoji:'🐆',animalName:'追風獵豹',rarity:22,
+    cardImage:'images/card_trend.png',
     animalHashtags:['#潮流探路先鋒','#爆款製造機','#流量密碼持有者'],
     cardColor:'#E07030',
     desc:'你的社群跟著趨勢走，吸引的是對流行敏感的追蹤者。你有打爆話題的潛力，受眾範圍廣，把流量轉成預約是你最重要的課題。',
     audience:[
-      {icon:'🔥',title:'潮流第一線追隨者',desc:'他們不需要太多說服，只需要一個「現在就要做」的理由。稀缺感和時效性，是讓他們從追蹤者變成預約客人的關鍵。'},
-      {icon:'👀',title:'廣泛追蹤隨時比較',desc:'他們同時在看很多設計師，但不代表不忠誠——只要你持續出現在他們的動態，品牌記憶度就在累積。'},
-      {icon:'📲',title:'高頻率轉發分享者',desc:'看到喜歡的造型或話題，他們會主動分享給朋友。你的每一支爆紅影片，背後都有這群人在幫忙擴散。'}
+      {icon:'🔥',image:'images/aud_trend_1.png',
+      title:'潮流第一線追隨者',desc:'他們不需要太多說服，只需要一個「現在就要做」的理由。稀缺感和時效性，是讓他們從追蹤者變成預約客人的關鍵。'},
+      {icon:'👀',image:'images/aud_trend_2.png',
+      title:'廣泛追蹤隨時比較',desc:'他們同時在看很多設計師，但不代表不忠誠——只要你持續出現在他們的動態，品牌記憶度就在累積。'},
+      {icon:'📲',image:'images/aud_trend_3.png',
+      title:'高頻率轉發分享者',desc:'看到喜歡的造型或話題，他們會主動分享給朋友。你的每一支爆紅影片，背後都有這群人在幫忙擴散。'}
     ],
     insight:'你的受眾是「趨勢追隨者」——他們關注的不只是你，而是整個流行美髮圈。你的優勢是觸及廣，但競爭也激烈。讓他們從「追蹤」到「預約」的關鍵，是製造緊迫感和獨特性。',
     bars:[{l:'社群觸及率',p:88,c:'#E07030'},{l:'話題製造力',p:85,c:'#A05828'},{l:'受眾穩定度',p:50,c:'#8A9E88'}],
@@ -560,8 +588,6 @@ const P = {
 
 // ─── STATE ──────────────────────────────────────────────────────
 let cur = 0, answers = [], scores = {};
-let shareCardDataUrl = '';
-let shareCardBlob = null;
 
 function classify() {
   const keys = ['visual','warm','edu','trend','reach','booking','loyal','trust','story'];
@@ -649,8 +675,11 @@ function showResult() {
   // audience
   document.getElementById('r-audience').innerHTML = p.audience.map(a=>`
     <div class="audience-card">
-      <div class="aud-icon">${a.icon}</div>
-      <div><div class="aud-title">${a.title}</div><div class="aud-desc">${a.desc}</div></div>
+      ${a.image ? `<img class="audience-card-img" src="${a.image}" alt="${a.title}">` : ''}
+      <div class="audience-card-body">
+        <div class="aud-title"><span class="aud-icon">${a.icon}</span>${a.title}</div>
+        <div class="aud-desc">${a.desc}</div>
+      </div>
     </div>`).join('');
 
   document.getElementById('r-insight').textContent = p.insight;
@@ -687,15 +716,12 @@ function showResult() {
     });
   });
 
-  // reset share card UI, then generate share card
-  shareCardDataUrl = '';
-  shareCardBlob = null;
-  document.getElementById('share-loading').style.display = 'flex';
-  document.getElementById('share-card-img').style.display = 'none';
-  document.getElementById('btn-download').style.display = 'none';
-  document.getElementById('btn-share').style.display = 'none';
-  document.getElementById('share-hint').style.display = 'none';
-  generateCard(p);
+  // 直接顯示設計師提供的人格卡片圖片
+  if (p.cardImage) {
+    showCard(p.cardImage);
+  } else {
+    generateCard(p);
+  }
 }
 
 // ─── CANVAS SHARE CARD ──────────────────────────────────────────
@@ -725,6 +751,14 @@ async function generateCard(persona) {
   cvs.width=W; cvs.height=H;
   const ctx=cvs.getContext('2d');
 
+  // ── 載入 RENATA LOGO（已去背 PNG）──
+  const logoImg = await new Promise(res => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => res(null);
+    img.src = 'images/logo_renata.png';
+  });
+
   // BG
   ctx.fillStyle='#FFF9E5';
   ctx.fillRect(0,0,W,H);
@@ -736,19 +770,44 @@ async function generateCard(persona) {
   // top stripe
   const g0=ctx.createLinearGradient(0,0,W,0);
   g0.addColorStop(0,'#db6014');g0.addColorStop(1,'#ff863b');
-  ctx.fillStyle=g0; ctx.fillRect(0,0,W,16);
+  ctx.fillStyle=g0; ctx.fillRect(0,0,W,18);
 
-  // ── brand ──
-  ctx.fillStyle='#2C1A0A';
-  ctx.font='bold 58px "DM Sans",sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('RENATA × Holymake',W/2,110);
-  ctx.fillStyle='#db6014';
-  ctx.font='36px "DM Sans",sans-serif';
-  ctx.fillText('社群人格分析報告',W/2,164);
+  // ── 頂部品牌區：RENATA LOGO 圖片 + × Holymake ──
+  const logoDrawH = 64;  // logo 在卡片上的高度 px
+  const logoDrawW = logoImg ? Math.round(logoImg.width * (logoDrawH / logoImg.height)) : 0;
+  const brandTotalW = logoDrawW + 48 + 220; // logo + gap + "× Holymake"
+  const brandX = (W - brandTotalW) / 2;
+  const brandY = 52;
+
+  if (logoImg) {
+    ctx.drawImage(logoImg, brandX, brandY, logoDrawW, logoDrawH);
+  }
+
+  // × 符號
+  ctx.fillStyle = '#db6014';
+  ctx.font = '52px "DM Sans",sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('×', brandX + logoDrawW + 18, brandY + logoDrawH / 2);
+
+  // Holymake 文字（模擬品牌字型）
+  ctx.font = 'bold italic 52px "Noto Serif TC",serif';
+  ctx.fillStyle = '#db6014';
+  ctx.fillText('Holy', brandX + logoDrawW + 62, brandY + logoDrawH / 2);
+  const holyW = ctx.measureText('Holy').width;
+  ctx.font = 'bold 52px "DM Sans",sans-serif';
+  ctx.fillStyle = 'rgba(255,134,59,0.85)';
+  ctx.fillText('make', brandX + logoDrawW + 62 + holyW, brandY + logoDrawH / 2);
+
+  // 副標
+  ctx.fillStyle = '#6B4423';
+  ctx.font = '500 28px "DM Sans",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('社群人格分析報告', W/2, brandY + logoDrawH + 40);
 
   // ── blob circle ──
-  const cx=W/2, cy=400, cr=210;
+  const cx=W/2, cy=430, cr=210;
   ctx.save();
   ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
   ctx.fillStyle='#2C1A0A';
@@ -765,52 +824,52 @@ async function generateCard(persona) {
   ctx.fillStyle='#6B4423';
   ctx.font='600 38px "DM Sans",sans-serif';
   ctx.textAlign='center';
-  ctx.fillText('你的社群人格是⋯⋯',W/2,685);
+  ctx.fillText('你的社群人格是⋯⋯',W/2,720);
 
   // highlight strip
   ctx.fillStyle='rgba(255,255,255,0.88)';
-  rrect(ctx,W/2-300,700,600,105,16); ctx.fill();
+  rrect(ctx,W/2-300,734,600,105,16); ctx.fill();
 
   ctx.fillStyle='#2C1A0A';
   ctx.font='bold 82px "Noto Serif TC",serif';
   ctx.textAlign='center';
-  ctx.fillText(persona.animalName,W/2,785);
+  ctx.fillText(persona.animalName,W/2,820);
 
   // hashtags
   ctx.fillStyle='#A05828';
   ctx.font='600 30px "DM Sans",sans-serif';
-  ctx.fillText(persona.animalHashtags.join('  '),W/2,852);
+  ctx.fillText(persona.animalHashtags.join('  '),W/2,886);
 
   // ── white card ──
   ctx.fillStyle='#fff';
   ctx.shadowColor='rgba(0,0,0,0.05)'; ctx.shadowBlur=40; ctx.shadowOffsetY=8;
-  rrect(ctx,52,895,W-104,760,36); ctx.fill();
+  rrect(ctx,52,928,W-104,810,36); ctx.fill();
   ctx.shadowBlur=0;
   ctx.strokeStyle='#F0E6D2'; ctx.lineWidth=2;
-  rrect(ctx,52,895,W-104,760,36); ctx.stroke();
+  rrect(ctx,52,928,W-104,810,36); ctx.stroke();
 
   // rarity
   ctx.textAlign='left';
   ctx.fillStyle='#6B4423';
   ctx.font='bold 36px "DM Sans",sans-serif';
-  ctx.fillText('世界上約有',120,974);
+  ctx.fillText('世界上約有',120,1008);
 
   ctx.fillStyle='#4A6849';
   ctx.font='bold 82px "DM Sans",sans-serif';
-  ctx.fillText(`${persona.rarity}%`,360,982);
+  ctx.fillText(`${persona.rarity}%`,370,1016);
 
   ctx.fillStyle='#6B4423';
   ctx.font='bold 36px "DM Sans",sans-serif';
-  ctx.fillText('的人和你一樣！',555,974);
+  ctx.fillText('的人和你一樣！',570,1008);
 
   // desc text
   ctx.fillStyle='#6B4423';
   ctx.font='31px "Noto Serif TC",serif';
   const descLines = wrapCJK(ctx,persona.desc,W-220);
-  descLines.forEach((ln,i)=>ctx.fillText(ln,120,1040+i*52));
+  descLines.forEach((ln,i)=>ctx.fillText(ln,120,1074+i*52));
 
   // dashed separator
-  const sepY=1295;
+  const sepY=1328;
   ctx.save();
   ctx.setLineDash([14,10]); ctx.strokeStyle='#E8DDD0'; ctx.lineWidth=2.5;
   ctx.beginPath(); ctx.moveTo(120,sepY); ctx.lineTo(W-120,sepY); ctx.stroke();
@@ -821,7 +880,7 @@ async function generateCard(persona) {
   ctx.fillText('容易吸引到這三種人',W/2,sepY-20);
 
   // audience icons
-  const audCols=[W*0.18,W*0.5,W*0.82], audY=1400;
+  const audCols=[W*0.18,W*0.5,W*0.82], audY=1448;
   persona.audience.forEach((a,i)=>{
     const ax=audCols[i];
     ctx.fillStyle='#FFF9E5';
@@ -837,138 +896,74 @@ async function generateCard(persona) {
     tl.slice(0,2).forEach((ln,li)=>ctx.fillText(ln,ax,audY+100+li*34));
   });
 
-  // ── QR code ──
-  let qrUrl='';
-  try {
-    const qr=new QRious({value:location.href||'https://lin.ee/YF1AjRg',size:220,background:'#fff',foreground:'#2c1a0a',level:'H'});
-    qrUrl=qr.toDataURL();
-  } catch(e){}
+  // ── 底部品牌帶：淺米色底，LOGO 直接正常顯示 ──
+  // 上方細分隔線
+  ctx.strokeStyle = '#E8DDD0'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, H-130); ctx.lineTo(W, H-130); ctx.stroke();
 
-  const qrY=1610;
-  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-  ctx.fillStyle='#2C1A0A';
-  ctx.font='bold 40px "DM Sans",sans-serif';
-  ctx.fillText('掃描 QR Code',120,qrY+44);
-  ctx.fillStyle='#db6014';
-  ctx.font='bold 40px "DM Sans",sans-serif';
-  ctx.fillText('測測你的社群人格！',120,qrY+96);
-  ctx.fillStyle='#8A9E88';
-  ctx.font='28px "DM Sans",sans-serif';
-  ctx.fillText('與朋友一起來挑戰',120,qrY+140);
+  // 淺米色背景
+  ctx.fillStyle = '#FBF0E8';
+  ctx.fillRect(0, H-130, W, 130);
 
-  if(qrUrl){
-    await new Promise(res=>{
-      const img=new Image();
-      img.onload=()=>{
-        ctx.fillStyle='#fff';
-        ctx.shadowColor='rgba(0,0,0,0.08)'; ctx.shadowBlur=20;
-        rrect(ctx,W-330,qrY-14,238,238,18); ctx.fill();
-        ctx.shadowBlur=0;
-        ctx.drawImage(img,W-318,qrY-2,214,214);
-        res();
-      };
-      img.onerror=res;
-      img.src=qrUrl;
-    });
+  const fLogoH = 50;
+  const fLogoW = logoImg ? Math.round(logoImg.width * (fLogoH / logoImg.height)) : 0;
+
+  // 計算 "× Holymake" 文字寬度先測量
+  ctx.font = 'bold italic 42px "Noto Serif TC",serif';
+  const holyMeasure = ctx.measureText('Holy').width;
+  ctx.font = 'bold 42px "DM Sans",sans-serif';
+  const makeMeasure = ctx.measureText('make').width;
+  ctx.font = '42px "DM Sans",sans-serif';
+  const xMeasure = ctx.measureText(' × ').width;
+  const fBrandTotalW = fLogoW + xMeasure + holyMeasure + makeMeasure;
+  const fBrandX = (W - fBrandTotalW) / 2;
+  const fCenterY = H - 130 + 65; // 垂直置中
+
+  // RENATA LOGO 圖片（黑色 on 淺色背景，直接繪製）
+  if (logoImg) {
+    ctx.drawImage(logoImg, fBrandX, fCenterY - fLogoH/2, fLogoW, fLogoH);
   }
 
-  // ── footer ──
-  const fg=ctx.createLinearGradient(0,H-110,0,H);
-  fg.addColorStop(0,'#2C1A0A'); fg.addColorStop(1,'#1a0e04');
-  ctx.fillStyle=fg; ctx.fillRect(0,H-110,W,110);
+  // × 符號
+  ctx.font = '42px "DM Sans",sans-serif';
+  ctx.fillStyle = '#db6014';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(' × ', fBrandX + fLogoW, fCenterY);
 
-  ctx.fillStyle='#db6014';
-  ctx.font='bold 50px "DM Sans",sans-serif';
-  ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText('RENATA',80,H-55);
+  // Holy（斜體 serif）
+  ctx.font = 'bold italic 42px "Noto Serif TC",serif';
+  ctx.fillStyle = '#db6014';
+  ctx.fillText('Holy', fBrandX + fLogoW + xMeasure, fCenterY);
 
-  ctx.fillStyle='#E8DDD0';
-  ctx.font='34px "DM Sans",sans-serif';
-  ctx.fillText('× Holymake  專屬社群髮品指南',310,H-55);
+  // make（正體 sans）
+  ctx.font = 'bold 42px "DM Sans",sans-serif';
+  ctx.fillStyle = 'rgba(255,134,59,0.85)';
+  ctx.fillText('make', fBrandX + fLogoW + xMeasure + holyMeasure, fCenterY);
+
+  ctx.textBaseline = 'alphabetic';
 
   // ── show in page ──
   const dataUrl = cvs.toDataURL('image/jpeg',0.93);
-  shareCardDataUrl = dataUrl;
-  shareCardBlob = await dataUrlToBlob(dataUrl);
+  showCard(dataUrl);
+}
 
-  const imgEl = document.getElementById('share-card-img');
+// ── 直接用設計師提供的美圖作為分享卡片 ──
+function showCard(dataUrl) {
+  const imgEl  = document.getElementById('share-card-img');
   const loading = document.getElementById('share-loading');
-  const btnDl = document.getElementById('btn-download');
-  const btnShare = document.getElementById('btn-share');
-  const hint = document.getElementById('share-hint');
+  const btnDl  = document.getElementById('btn-download');
+  const hint   = document.getElementById('share-hint');
 
   imgEl.src = dataUrl;
   imgEl.style.display = 'block';
   loading.style.display = 'none';
+  btnDl.href = dataUrl;
   btnDl.style.display = 'flex';
-  btnShare.style.display = 'flex';
   hint.style.display = 'block';
 }
 
 // ─── UTILS ──────────────────────────────────────────────────────
-async function dataUrlToBlob(dataUrl){
-  const res = await fetch(dataUrl);
-  return await res.blob();
-}
-
-function isIOS(){
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
-function downloadCardImage(){
-  if(!shareCardDataUrl){
-    toast('圖片還在產生中，請稍等一下');
-    return;
-  }
-  const a = document.createElement('a');
-  a.href = shareCardDataUrl;
-  a.download = 'renata-holymake-social-persona.jpg';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-
-  if(isIOS()){
-    toast('如果沒有自動儲存，請長按圖片加入照片');
-  } else {
-    toast('圖片已準備下載');
-  }
-}
-
-async function shareCardNative(){
-  if(!shareCardDataUrl){
-    toast('圖片還在產生中，請稍等一下');
-    return;
-  }
-
-  try{
-    if(!shareCardBlob) shareCardBlob = await dataUrlToBlob(shareCardDataUrl);
-    const file = new File([shareCardBlob], 'renata-holymake-social-persona.jpg', {type:'image/jpeg'});
-
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({
-        files:[file],
-        title:'我的社群人格分析',
-        text:'我剛測出我的社群人格，給你也測看看！'
-      });
-      return;
-    }
-
-    if(navigator.share){
-      await navigator.share({
-        title:'社群人格分析｜RENATA × Holymake',
-        text:'我剛測出我的社群人格，給你也測看看！',
-        url:location.href
-      });
-      return;
-    }
-
-    downloadCardImage();
-  }catch(err){
-    if(err && err.name === 'AbortError') return;
-    downloadCardImage();
-  }
-}
-
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
@@ -984,10 +979,295 @@ function copyLink(){
   }
 }
 function savePDF(){
-  const prev=document.title;
-  document.title='社群人格分析報告';
-  window.print();
-  document.title=prev;
+  // 桌機用 print，手機改截長圖下載
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (!isMobile) {
+    const prev = document.title;
+    document.title = '社群人格分析報告';
+    window.print();
+    document.title = prev;
+    return;
+  }
+
+  // 手機：把報告文字內容整理成長圖用 Canvas 繪製後下載
+  toast('正在產生報告圖片，請稍候⋯⋯');
+  setTimeout(() => {
+    try {
+      const pk = classify();
+      const p = P[pk];
+      generateReportImage(p);
+    } catch(e) {
+      toast('請截圖儲存報告 📸');
+    }
+  }, 100);
+}
+
+async function generateReportImage(p) {
+  const W = 1080;
+  const lineH = 46;
+  const pad = 72;
+
+  // ── Pre-calculate total height ──
+  // We'll draw to a temp canvas first to measure, then draw final
+  const cvs = document.createElement('canvas');
+  cvs.width = W;
+  cvs.height = 100; // temp
+  const ctx = cvs.getContext('2d');
+
+  function sectionLines(title, items) {
+    // returns estimated line count
+    return 2 + items.reduce((acc, txt) => acc + Math.ceil(txt.length / 28) + 1, 0);
+  }
+
+  // Build content blocks
+  const blocks = [];
+
+  // Header block
+  blocks.push({ type:'header', p });
+
+  // Bars
+  blocks.push({ type:'section', title:'人格維度分析' });
+  p.bars.forEach(b => blocks.push({ type:'bar', label:b.l, pct:b.p, color:b.c }));
+
+  // Audience
+  blocks.push({ type:'section', title:'你吸引的觀眾類型' });
+  p.audience.forEach(a => blocks.push({ type:'audience', icon:a.icon, title:a.title, desc:a.desc }));
+  blocks.push({ type:'insight', text:p.insight });
+
+  // Tips
+  blocks.push({ type:'section', title:'內容策略建議' });
+  p.tips.forEach(t => blocks.push({ type:'tip', icon:t.i, title:t.t, desc:t.s }));
+
+  // Products
+  blocks.push({ type:'section', title:'為你的受眾推薦的髮品' });
+  p.products.forEach((pr, i) => blocks.push({ type:'product', pr, first:i===0 }));
+
+  // Footer
+  blocks.push({ type:'footer' });
+
+  // ── Measure total height ──
+  ctx.font = `32px "DM Sans",sans-serif`;
+  let totalH = pad;
+  for (const b of blocks) {
+    if (b.type === 'header') totalH += 360;
+    else if (b.type === 'section') totalH += 80;
+    else if (b.type === 'bar') totalH += 70;
+    else if (b.type === 'audience') {
+      const lines = wrapCJK(ctx, b.desc, W - pad*2 - 60);
+      totalH += 60 + lines.length * 40;
+    }
+    else if (b.type === 'insight') {
+      const lines = wrapCJK(ctx, b.text, W - pad*2 - 40);
+      totalH += 60 + lines.length * 40;
+    }
+    else if (b.type === 'tip') {
+      const lines = wrapCJK(ctx, b.desc, W - pad*2 - 60);
+      totalH += 60 + lines.length * 40;
+    }
+    else if (b.type === 'product') {
+      const whyLines = wrapCJK(ctx, b.pr.why, W - pad*2 - 40);
+      const shootLines = wrapCJK(ctx, b.pr.shoot, W - pad*2 - 40);
+      const scriptLines = wrapCJK(ctx, b.pr.script, W - pad*2 - 40);
+      totalH += 100 + (whyLines.length + shootLines.length + scriptLines.length) * 40 + 160;
+    }
+    else if (b.type === 'footer') totalH += 120;
+  }
+  totalH += pad;
+
+  // ── Draw on real canvas ──
+  cvs.height = totalH;
+  ctx.fillStyle = '#FAF8F4';
+  ctx.fillRect(0, 0, W, totalH);
+
+  // top stripe
+  const g = ctx.createLinearGradient(0,0,W,0);
+  g.addColorStop(0,'#db6014'); g.addColorStop(1,'#ff863b');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,14);
+
+  let y = pad;
+
+  for (const b of blocks) {
+    if (b.type === 'header') {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#db6014';
+      ctx.font = 'bold 28px "DM Sans",sans-serif';
+      ctx.fillText('受眾分析報告', pad, y + 32);
+      y += 50;
+
+      ctx.font = '100px serif';
+      ctx.textBaseline = 'top';
+      ctx.fillText(b.p.animalEmoji, pad, y);
+      y += 110;
+
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 62px "Noto Serif TC",serif';
+      ctx.fillText(b.p.animalName, pad, y);
+      y += 20;
+
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '36px "DM Sans",sans-serif';
+      ctx.fillText(`(${b.p.name})`, pad, y + 44);
+      y += 72;
+
+      ctx.fillStyle = '#8A9E88';
+      ctx.font = 'bold 26px "DM Sans",sans-serif';
+      ctx.fillText(b.p.animalHashtags.join('  '), pad, y);
+      y += 44;
+
+      ctx.fillStyle = '#db6014';
+      ctx.font = 'bold 26px "DM Sans",sans-serif';
+      ctx.fillText(`世界上約有 ${b.p.rarity}% 的人與你一樣！`, pad, y);
+      y += 50;
+
+      // desc
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '30px "Noto Serif TC",serif';
+      const dl = wrapCJK(ctx, b.p.desc, W - pad*2);
+      dl.forEach(ln => { ctx.fillText(ln, pad, y); y += 44; });
+      y += 20;
+
+      // divider
+      ctx.strokeStyle = '#E8DDD0'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+      y += 24;
+    }
+
+    else if (b.type === 'section') {
+      y += 12;
+      ctx.fillStyle = '#FBF0E8';
+      rrect(ctx, pad-10, y-2, W-pad*2+20, 52, 8); ctx.fill();
+      ctx.fillStyle = '#db6014';
+      ctx.fillRect(pad-10, y-2, 6, 52);
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 36px "Noto Serif TC",serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(b.title, pad+14, y+37);
+      y += 72;
+    }
+
+    else if (b.type === 'bar') {
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '28px "DM Sans",sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(b.label, pad, y + 22);
+      ctx.textAlign = 'right';
+      ctx.fillText(`${b.pct}%`, W-pad, y + 22);
+      ctx.textAlign = 'left';
+      y += 34;
+      ctx.fillStyle = '#E8DDD0';
+      rrect(ctx, pad, y, W-pad*2, 10, 5); ctx.fill();
+      ctx.fillStyle = b.color;
+      rrect(ctx, pad, y, (W-pad*2)*b.pct/100, 10, 5); ctx.fill();
+      y += 36;
+    }
+
+    else if (b.type === 'audience') {
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 32px "DM Sans",sans-serif';
+      ctx.fillText(`${b.icon}  ${b.title}`, pad, y + 30);
+      y += 44;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '28px "Noto Serif TC",serif';
+      const dl = wrapCJK(ctx, b.desc, W - pad*2 - 40);
+      dl.forEach(ln => { ctx.fillText(ln, pad + 40, y); y += 38; });
+      y += 16;
+    }
+
+    else if (b.type === 'insight') {
+      ctx.fillStyle = '#FAF8F4';
+      rrect(ctx, pad, y, W-pad*2, 50, 10); // will fill after measuring
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 30px "DM Sans",sans-serif';
+      ctx.fillText('💡 受眾洞察', pad, y + 34);
+      y += 50;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '28px "Noto Serif TC",serif';
+      const il = wrapCJK(ctx, b.text, W - pad*2 - 20);
+      il.forEach(ln => { ctx.fillText(ln, pad+10, y); y += 38; });
+      y += 24;
+    }
+
+    else if (b.type === 'tip') {
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 30px "DM Sans",sans-serif';
+      ctx.fillText(`${b.icon}  ${b.title}`, pad, y + 28);
+      y += 42;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '27px "Noto Serif TC",serif';
+      const tl = wrapCJK(ctx, b.desc, W - pad*2 - 40);
+      tl.forEach(ln => { ctx.fillText(ln, pad+40, y); y += 36; });
+      y += 20;
+    }
+
+    else if (b.type === 'product') {
+      if (b.first) {
+        ctx.fillStyle = '#db6014';
+        ctx.font = 'bold 26px "DM Sans",sans-serif';
+        ctx.fillText('★ 最高轉換率推薦', pad, y + 24);
+        y += 38;
+      }
+      ctx.fillStyle = '#2C1A0A';
+      ctx.font = 'bold 36px "Noto Serif TC",serif';
+      ctx.fillText(b.pr.name, pad, y + 34);
+      y += 50;
+
+      ctx.fillStyle = '#8A9E88';
+      ctx.font = 'bold 24px "DM Sans",sans-serif';
+      ctx.fillText('為什麼適合你的客人：', pad, y + 24);
+      y += 36;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '26px "Noto Serif TC",serif';
+      const wl = wrapCJK(ctx, b.pr.why, W - pad*2);
+      wl.forEach(ln => { ctx.fillText(ln, pad, y); y += 36; });
+      y += 12;
+
+      ctx.fillStyle = '#8A9E88';
+      ctx.font = 'bold 24px "DM Sans",sans-serif';
+      ctx.fillText('📸 拍攝建議：', pad, y + 24);
+      y += 36;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '26px "Noto Serif TC",serif';
+      const sl = wrapCJK(ctx, b.pr.shoot, W - pad*2);
+      sl.forEach(ln => { ctx.fillText(ln, pad, y); y += 36; });
+      y += 12;
+
+      ctx.fillStyle = '#8A9E88';
+      ctx.font = 'bold 24px "DM Sans",sans-serif';
+      ctx.fillText('💬 推薦話術：', pad, y + 24);
+      y += 36;
+      ctx.fillStyle = '#6B4423';
+      ctx.font = '26px "Noto Serif TC",serif';
+      const ql = wrapCJK(ctx, b.pr.script, W - pad*2);
+      ql.forEach(ln => { ctx.fillText(ln, pad, y); y += 36; });
+
+      // divider between products
+      y += 20;
+      ctx.strokeStyle = '#E8DDD0'; ctx.lineWidth = 1.5;
+      ctx.setLineDash([8,8]);
+      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+      ctx.setLineDash([]);
+      y += 28;
+    }
+
+    else if (b.type === 'footer') {
+      y += 20;
+      ctx.strokeStyle = '#E8DDD0'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+      y += 36;
+      ctx.fillStyle = '#db6014';
+      ctx.font = 'bold 36px "DM Sans",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('RENATA × Holymake  社群人格分析', W/2, y + 28);
+    }
+  }
+
+  const dataUrl = cvs.toDataURL('image/jpeg', 0.92);
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = 'renata-holymake-report.jpg';
+  a.click();
+  toast('報告圖片已下載！📄');
 }
 </script>
 </body>
