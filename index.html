@@ -893,6 +893,97 @@ body::before{
   height: auto;
 }
 
+
+/* ── Long-press friendly image / instruction blocks ── */
+.download-guide-box,
+.external-browser-hint {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fffaf6;
+  border: 1px solid #f1ddd0;
+  color: var(--brown-deep);
+  font-size: .88rem;
+  line-height: 1.72;
+}
+.download-guide-box strong,
+.external-browser-hint strong {
+  color: var(--orange);
+}
+.external-browser-hint {
+  display: none;
+  background: #fff3eb;
+}
+.copy-link-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px dashed var(--orange);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--orange);
+  font-size: .92rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.longpress-photo-zone {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 24px rgba(44,26,10,.06);
+}
+.longpress-photo-zone .longpress-label {
+  margin: 0 0 10px;
+  color: var(--brown-mid);
+  font-size: .82rem;
+  line-height: 1.6;
+}
+#share-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: default;
+  touch-action: manipulation;
+  pointer-events: auto;
+}
+.btn-open-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--orange);
+  background: #fff;
+  color: var(--orange);
+  font-size: .95rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.download-fallback-link {
+  display: none;
+  margin-top: 10px;
+  text-align: center;
+  color: var(--orange);
+  font-size: .82rem;
+  font-weight: 700;
+}
+.download-fallback-link.show {
+  display: block !important;
+}
+
 </style>
 </head>
 <body>
@@ -960,7 +1051,20 @@ body::before{
       <div class="share-section-header serif">你的專屬結果卡已生成</div>
       <div class="share-section-sub">覺得有準，就直接存圖發限動。分享阻力已經幫你降到最低。</div>
       <div class="share-badge">🔥 適合發 IG 限動 / LINE 群組 / 客人互動</div>
-      <div class="share-card-wrap">
+      <div class="external-browser-hint" id="external-browser-hint">
+        <strong>目前偵測到你可能在 LINE / IG 內建瀏覽器中。</strong><br>
+        如果圖片或 PDF 下載失敗，請點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟。
+        <button id="copy-link-btn" class="copy-link-btn" type="button" onclick="copyCurrentURL()">
+          <span>🔗</span> 複製目前網址
+        </button>
+      </div>
+
+      <div class="download-guide-box" id="image-download-guide">
+        你可以直接長按下方圖片儲存到手機相簿。
+      </div>
+
+      <div class="share-card-wrap longpress-photo-zone">
+        <p class="longpress-label">📌 <strong>下方這張就是可長按儲存的圖片。</strong> 如果按鈕不好用，也可以直接長按圖片保存。</p>
         <div class="share-card-loading" id="share-loading">
           <div class="spinner"></div>
           <span>正在產生你的專屬卡片⋯⋯</span>
@@ -968,14 +1072,24 @@ body::before{
         <img id="share-card-img" style="display:none" alt="社群人格分享卡">
       </div>
       <div class="share-btn-wrap">
-        <a id="btn-download" class="btn-download" style="display:none" download="renata-holymake.jpg">
-          <span>⬇️</span> 儲存結果卡，分享到 IG
+        <button id="btn-share-card" class="btn-download" style="display:none" type="button" onclick="shareOrSaveCard()">
+          <span>📲</span> 分享 / 儲存結果卡
+        </button>
+        <button id="btn-open-image" class="btn-open-image" style="display:none" type="button" onclick="openResultCardImage()">
+          <span>🖼️</span> 開啟圖片版結果卡
+        </button>
+        <a id="btn-download" class="download-fallback-link" style="display:none" download="renata-holymake.jpg">
+          備用下載連結
         </a>
       </div>
-      <div class="share-hint" id="share-hint" style="display:none">
-        <span class="share-hint-line">📱 <span>iOS</span>：長按圖片 → 加入照片</span>
-        <span class="share-hint-line">🤖 <span>Android</span>：點上方按鈕下載</span>
-        <span class="share-hint-sub">儲存後直接開啟 IG → 限時動態貼上即可</span>
+      <div class="share-hint line-friendly" id="share-hint" style="display:none">
+        <span class="share-hint-line">📲 先試「分享 / 儲存結果卡」。</span>
+        <span class="share-hint-line">🖼️ 若沒成功，直接長按上方圖片；或點「開啟圖片版結果卡」後再長按。</span>
+        <span class="share-hint-sub">如果你正在 LINE / IG 內建瀏覽器，建議改用 Safari / Chrome 下載會更穩。</span>
+      </div>
+
+      <div class="download-guide-box" id="pdf-download-guide">
+        PDF 若下載失敗，請改用 Safari / Chrome。
       </div>
     </div>
 
@@ -1063,7 +1177,7 @@ body::before{
     <div class="cta-block">
       <div class="cta-title serif">下載手機安全版精簡報告</div>
       <div class="cta-desc">這版改成手機安全下載：不開新視窗、不走列印流程，直接在頁面內產生 4 頁精簡 PDF。</div>
-      <button class="btn-cta" onclick="savePDF()"><span>📄</span> 下載手機安全版 PDF</button>
+      <button class="btn-cta" onclick="savePDF()"><span>📄</span> 下載手機安全版 PDF（建議用 Safari / Chrome）</button>
     </div>
 
     <div class="share-link-section">
@@ -1751,6 +1865,7 @@ function showCard(dataUrl) {
   }
 
   hint.style.display = 'block';
+  updateDownloadGuides();
 }
 
 async function shareOrSaveCard() {
@@ -1888,6 +2003,45 @@ function copyLink(){
     inp.select();document.execCommand('copy');document.body.removeChild(inp);
     toast('測驗連結已複製！丟群組剛好 ✨');
   }
+}
+
+
+function isInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  return /Line\//i.test(ua) || /Instagram/i.test(ua) || /FBAN|FBAV/i.test(ua);
+}
+
+async function copyCurrentURL() {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    toast('網址已複製，請貼到 Safari / Chrome 開啟');
+  } catch (e) {
+    console.warn(e);
+    toast('無法自動複製，請手動複製網址');
+  }
+}
+
+function updateDownloadGuides() {
+  const imgTip = document.getElementById('image-download-guide');
+  const pdfTip = document.getElementById('pdf-download-guide');
+  const externalHint = document.getElementById('external-browser-hint');
+  const copyBtn = document.getElementById('copy-link-btn');
+  const inApp = isInAppBrowser();
+
+  if (imgTip) {
+    imgTip.innerHTML = inApp
+      ? '你目前在 <strong>LINE / IG 內建瀏覽器</strong> 中。請直接<strong>長按下方圖片</strong>嘗試儲存；若無法儲存，請點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟後再長按圖片。'
+      : '你可以直接<strong>長按下方圖片</strong>儲存到手機相簿，也可以使用「分享 / 儲存結果卡」按鈕。';
+  }
+
+  if (pdfTip) {
+    pdfTip.innerHTML = inApp
+      ? 'PDF 在 LINE / IG 內建瀏覽器中常常會下載失敗。建議你先點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟，再點「下載手機安全版 PDF（建議用 Safari / Chrome）（建議用 Safari / Chrome）」。'
+      : 'PDF 下載若仍失敗，請改用 Safari / Chrome。';
+  }
+
+  if (externalHint) externalHint.style.display = inApp ? 'block' : 'none';
+  if (copyBtn) copyBtn.style.display = inApp ? 'flex' : 'none';
 }
 
 function savePDF(){
@@ -2218,6 +2372,7 @@ async function generateMobileSafePDF(pk, p) {
       }
     });
   }
+  updateDownloadGuides();
 });
 
 </script>
