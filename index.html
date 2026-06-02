@@ -1037,33 +1037,12 @@ body::before{
 
   <!-- ── RESULT PAGE ── -->
   <div id="page-result" class="page result">
-    <div class="result-header">
-      <div class="result-eyebrow">受眾分析報告</div>
-      <div class="result-animal-emoji" id="r-emoji"></div>
-      <div class="result-name serif" id="r-name"></div>
-      <div class="result-tags" id="r-tags"></div>
-      <div class="result-desc" id="r-desc"></div>
-      <div class="result-hit" id="r-hit"></div>
-    </div>
-
     <!-- 分享卡片區塊 -->
     <div class="share-section">
       <div class="share-section-header serif">你的專屬結果卡已生成</div>
-      <div class="share-section-sub">覺得有準，就直接存圖發限動。分享阻力已經幫你降到最低。</div>
+      <div class="share-section-sub">先看你的專屬限動分享卡，再往下看完整受眾分析。</div>
       <div class="share-badge">🔥 適合發 IG 限動 / LINE 群組 / 客人互動</div>
-      <div class="external-browser-hint" id="external-browser-hint">
-        <strong>目前偵測到你可能在 LINE / IG 內建瀏覽器中。</strong><br>
-        如果圖片或 PDF 下載失敗，請點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟。
-        <button id="copy-link-btn" class="copy-link-btn" type="button" onclick="copyCurrentURL()">
-          <span>🔗</span> 複製目前網址
-        </button>
-      </div>
-
-      <div class="download-guide-box" id="image-download-guide">
-        你可以直接長按下方圖片儲存到手機相簿。
-      </div>
-
-      <div class="share-card-wrap longpress-photo-zone">
+<div class="share-card-wrap longpress-photo-zone">
         <p class="longpress-label">📌 <strong>下方這張就是可長按儲存的圖片。</strong> 如果按鈕不好用，也可以直接長按圖片保存。</p>
         <div class="share-card-loading" id="share-loading">
           <div class="spinner"></div>
@@ -1073,24 +1052,21 @@ body::before{
       </div>
       <div class="share-btn-wrap">
         <button id="btn-share-card" class="btn-download" style="display:none" type="button" onclick="shareOrSaveCard()">
-          <span>📲</span> 分享 / 儲存結果卡
+          <span>📲</span> 分享 / 儲存限時動態分享卡
         </button>
-        <button id="btn-open-image" class="btn-open-image" style="display:none" type="button" onclick="openResultCardImage()">
-          <span>🖼️</span> 開啟圖片版結果卡
-        </button>
-        <a id="btn-download" class="download-fallback-link" style="display:none" download="renata-holymake.jpg">
+<a id="btn-download" class="download-fallback-link" style="display:none" download="renata-holymake.jpg">
           備用下載連結
         </a>
       </div>
-      <div class="share-hint line-friendly" id="share-hint" style="display:none">
-        <span class="share-hint-line">📲 先試「分享 / 儲存結果卡」。</span>
-        <span class="share-hint-line">🖼️ 若沒成功，直接長按上方圖片；或點「開啟圖片版結果卡」後再長按。</span>
-        <span class="share-hint-sub">如果你正在 LINE / IG 內建瀏覽器，建議改用 Safari / Chrome 下載會更穩。</span>
-      </div>
+</div>
 
-      <div class="download-guide-box" id="pdf-download-guide">
-        PDF 若下載失敗，請改用 Safari / Chrome。
-      </div>
+    <div class="result-header">
+      <div class="result-eyebrow">受眾分析報告</div>
+      <div class="result-animal-emoji" id="r-emoji"></div>
+      <div class="result-name serif" id="r-name"></div>
+      <div class="result-tags" id="r-tags"></div>
+      <div class="result-desc" id="r-desc"></div>
+      <div class="result-hit" id="r-hit"></div>
     </div>
 
     <div class="share-caption-box">
@@ -1848,7 +1824,6 @@ function showCard(dataUrl) {
   const loading = document.getElementById('share-loading');
   const btnDl  = document.getElementById('btn-download');
   const btnShare = document.getElementById('btn-share-card');
-  const btnOpen = document.getElementById('btn-open-image');
   const hint   = document.getElementById('share-hint');
 
   imgEl.src = dataUrl;
@@ -1856,7 +1831,6 @@ function showCard(dataUrl) {
   loading.style.display = 'none';
 
   if (btnShare) btnShare.style.display = 'flex';
-  if (btnOpen) btnOpen.style.display = 'flex';
 
   // Keep old download as a hidden fallback link for browsers that still support it.
   if (btnDl) {
@@ -1864,7 +1838,7 @@ function showCard(dataUrl) {
     btnDl.style.display = 'none';
   }
 
-  hint.style.display = 'block';
+  if (hint) hint.style.display = 'block';
   updateDownloadGuides();
 }
 
@@ -2022,26 +1996,7 @@ async function copyCurrentURL() {
 }
 
 function updateDownloadGuides() {
-  const imgTip = document.getElementById('image-download-guide');
-  const pdfTip = document.getElementById('pdf-download-guide');
-  const externalHint = document.getElementById('external-browser-hint');
-  const copyBtn = document.getElementById('copy-link-btn');
-  const inApp = isInAppBrowser();
-
-  if (imgTip) {
-    imgTip.innerHTML = inApp
-      ? '你目前在 <strong>LINE / IG 內建瀏覽器</strong> 中。請直接<strong>長按下方圖片</strong>嘗試儲存；若無法儲存，請點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟後再長按圖片。'
-      : '你可以直接<strong>長按下方圖片</strong>儲存到手機相簿，也可以使用「分享 / 儲存結果卡」按鈕。';
-  }
-
-  if (pdfTip) {
-    pdfTip.innerHTML = inApp
-      ? 'PDF 在 LINE / IG 內建瀏覽器中常常會下載失敗。建議你先點右上角「⋯」→ 用 <strong>Safari / Chrome</strong> 開啟，再點「下載手機安全版 PDF（建議用 Safari / Chrome）（建議用 Safari / Chrome）」。'
-      : 'PDF 下載若仍失敗，請改用 Safari / Chrome。';
-  }
-
-  if (externalHint) externalHint.style.display = inApp ? 'block' : 'none';
-  if (copyBtn) copyBtn.style.display = inApp ? 'flex' : 'none';
+  return;
 }
 
 function savePDF(){
